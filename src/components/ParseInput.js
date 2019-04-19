@@ -3,12 +3,14 @@ import XLSX from 'xlsx'
 import Selector from './Selector';
 
 export default class ParseInput extends Component {
-    
-
     state = {
+        cells: [],
         cell: 'A15',
-        column: 'A',
-        row: '1',
+        model: [],
+        nameColumn: 'A',
+        nameRow: '1',
+        valueColumn: 'A',
+        valueRow: '1',
         results: [],
         rABS: true
     }
@@ -28,11 +30,9 @@ export default class ParseInput extends Component {
             var data = e.target.result; 
             var workbook = XLSX.read(data, { type: 'binary' });
             var first_sheet_name = workbook.SheetNames[0];
-            var address_of_cell = `${this.state.column}${this.state.row}`;
             var worksheet = workbook.Sheets[first_sheet_name];
-            var desired_cell = worksheet[address_of_cell];
-            var desired_value = (desired_cell ? desired_cell.v : undefined);
-            this.setState({results: [desired_value, ...this.state.results]})
+            const values = this.state.cells.map((cell) => `${worksheet[cell.key].v} : ${worksheet[cell.value].v} \n`)
+            this.setState({results: [...values, ...this.state.results]})
         }
         reader.readAsBinaryString(file);
     }
@@ -50,35 +50,71 @@ export default class ParseInput extends Component {
         
     }
 
-    handleColumnChange = (e) => {
+    handleColumnChange = (e, fieldName) => {
         console.log(e.target.value)
         this.setState({
-            column: e.target.value
+            [fieldName]: e.target.value
         })
     }
 
-    handleRowChange = (e) => {
+    handleRowChange = (e, fieldName) => {
         console.log(e.target.value)
         this.setState({
-            row: e.target.value
+            [fieldName]: e.target.value
         })
     }
+
+    addDataField = (e) => {
+      this.setState({
+        cells: [
+          ...this.state.cells,
+          {
+            key: `${this.state.nameColumn}${this.state.nameRow}`,
+            value: `${this.state.valueColumn}${this.state.valueRow}` 
+          }
+        ]
+      })
+    }
+
+    renderDataModel = (rows) => rows.map(row => <p>{row.key} : {row.value}</p>)
 
     render() {
         console.log("re render page")
         return (
             <div style={style}>
-                <Selector handleColumnChange={this.handleColumnChange} handleRowChange={this.handleRowChange}/>
+              <div style={dataModel}>
+                {'{'}
+                {this.renderDataModel(this.state.cells)}
+                {'}'}
+              </div>
+              <div style={dataItemStyle}>
+                <Selector handleColumnChange={(e) => this.handleColumnChange(e, 'nameColumn')} handleRowChange={(e) => this.handleRowChange(e, 'nameRow')}/> :
+                <Selector handleColumnChange={(e) => this.handleColumnChange(e, 'valueColumn')} handleRowChange={(e) => this.handleRowChange(e, 'valueRow')}/>
+                <button onClick={this.addDataField}>Add</button>
+              </div>
                 <div  onDrop={this.onDrop} onDragEnter={(e) => e.preventDefault()} onDragOver={e => e.preventDefault()} style={{ height: 200, width: 200, backgroundColor: 'lightGrey', margin: 'auto', border:'3px dashed grey', borderRadius: '20px' }}></div>
                 <button onClick={this.onClickHandler} style={{padding: '8px', marginTop: '12px', fontSize:'16px'}}>Reset</button>
-                {this.state.results.map(result => (<p>{result} </p>))}
+                {this.state.results.map(result => (<p>{'{'} {result} {'}'} </p>))}
             </div>
         )
     }
 }
 
 const style = {
+    padding: '0 6rem',
     margin: 'auto',
     textAlign: 'center',
     marginTop: '6rem'
+}
+
+const dataItemStyle = {
+  border: '1px solid grey',
+  display: 'flex',
+  justifyContent: 'center',
+}
+
+const dataModel = {
+  padding: '1rem',
+  border: '1px solid grey',
+  backgroundColor: 'aquamarine'
 }
