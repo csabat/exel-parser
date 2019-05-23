@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import ParseInput from './components/ParseInput';
+import SingleDocParse from './components/SingleDocParse';
 import Header from './components/Header';
 
 class App extends Component {
@@ -8,7 +8,7 @@ class App extends Component {
     return (
       <div>
         <Header />
-        <ParseInput/>
+        <SingleDocParse />
       </div>
     );
   }

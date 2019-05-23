@@ -31,8 +31,8 @@ export default class ParseInput extends Component {
             var workbook = XLSX.read(data, { type: 'binary' });
             var first_sheet_name = workbook.SheetNames[0];
             var worksheet = workbook.Sheets[first_sheet_name];
-            const values = this.state.cells.map((cell) => `${worksheet[cell.key].v} : ${worksheet[cell.value].v} \n`)
-            this.setState({results: [...values, ...this.state.results]})
+            const values = this.state.cells.map((cell) => `"${worksheet[cell.key].v}" : ${worksheet[cell.value].v} ,`)
+            this.setState({results: [values, ...this.state.results]})
         }
         reader.readAsBinaryString(file);
     }
@@ -50,14 +50,7 @@ export default class ParseInput extends Component {
         
     }
 
-    handleColumnChange = (e, fieldName) => {
-        console.log(e.target.value)
-        this.setState({
-            [fieldName]: e.target.value
-        })
-    }
-
-    handleRowChange = (e, fieldName) => {
+    handleSelectorChange = (e, fieldName) => {
         console.log(e.target.value)
         this.setState({
             [fieldName]: e.target.value
@@ -88,13 +81,13 @@ export default class ParseInput extends Component {
                 {'}'}
               </div>
               <div style={dataItemStyle}>
-                <Selector handleColumnChange={(e) => this.handleColumnChange(e, 'nameColumn')} handleRowChange={(e) => this.handleRowChange(e, 'nameRow')}/> :
-                <Selector handleColumnChange={(e) => this.handleColumnChange(e, 'valueColumn')} handleRowChange={(e) => this.handleRowChange(e, 'valueRow')}/>
+                <Selector handleColumnChange={(e) => this.handleSelectorChange(e, 'nameColumn')} handleRowChange={(e) => this.handleSelectorChange(e, 'nameRow')}/> :
+                <Selector handleColumnChange={(e) => this.handleSelectorChange(e, 'valueColumn')} handleRowChange={(e) => this.handleSelectorChange(e, 'valueRow')}/>
                 <button onClick={this.addDataField}>Add</button>
               </div>
                 <div  onDrop={this.onDrop} onDragEnter={(e) => e.preventDefault()} onDragOver={e => e.preventDefault()} style={{ height: 200, width: 200, backgroundColor: 'lightGrey', margin: 'auto', border:'3px dashed grey', borderRadius: '20px' }}></div>
                 <button onClick={this.onClickHandler} style={{padding: '8px', marginTop: '12px', fontSize:'16px'}}>Reset</button>
-                {this.state.results.map(result => (<p>{'{'} {result} {'}'} </p>))}
+                {this.state.results.map(result => (<p>{'{'} {result} {'},'} </p>))}
             </div>
         )
     }
