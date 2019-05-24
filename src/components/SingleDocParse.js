@@ -6,9 +6,9 @@ export default class SingleDocParse extends Component {
     state = {
         model: {
         },
-        start: 1,
-        end: 10,
-        column: '',
+        start: 10,
+        end: 20,
+        column: 'A',
         fieldName: '',
         results: [],
         rABS: true
@@ -58,7 +58,7 @@ export default class SingleDocParse extends Component {
     
     renderModel = () => {
       const keys = Object.keys(this.state.model);
-      return keys.map(key => <p>{key} : {this.state.model[key]}</p>)
+      return keys.map(key => <p>{this.state.model[key]} : {key}</p>)
     }
 
     onDrop = (e) => {
@@ -104,13 +104,14 @@ export default class SingleDocParse extends Component {
         return (
            
             <div style={style}>
-            { this.state.results.length && <a href={`data: ${returnJsonData}`} download={'data.json'}>Download Data</a> }
+            { this.state.results.length !== 0 && <a href={`data: ${returnJsonData}`} download={'data.json'}>Download Data</a> }
             <div style={dataModel}>
               {this.renderModel()}
             </div>
               <div style={dataItemStyle}>
-                <ColumnSelector handleColumnChange={(e) => this.handleSelectorChange(e, 'column')}/> :
-                <input value={this.state.model.fieldName} onChange={(e) => this.handleSelectorChange(e, 'fieldName')}/>
+
+                <input value={this.state.model.fieldName} onChange={(e) => this.handleSelectorChange(e, 'fieldName')}/> :
+                <ColumnSelector handleColumnChange={(e) => this.handleSelectorChange(e, 'column')}/> 
                 <button onClick={this.addDataField}>Add</button>
               </div>
                 <div  onDrop={this.onDrop} onDragEnter={(e) => e.preventDefault()} onDragOver={e => e.preventDefault()} style={{ height: 200, width: 200, backgroundColor: 'lightGrey', margin: 'auto', border:'3px dashed grey', borderRadius: '20px' }}></div>
@@ -135,6 +136,8 @@ const dataItemStyle = {
 
 const dataModel = {
   padding: '1rem',
-  border: '1px solid grey',
-  backgroundColor: 'aquamarine'
+  minWidth: '10rem',
+  marginBottom: '1rem',
+  backgroundColor: 'black',
+  color: 'white',
 }
